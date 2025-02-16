@@ -1,8 +1,8 @@
 package ru.markn.novelgame.pres.game
 
-import ru.markn.novelgame.domain.Scenes
+import ru.markn.novelgame.domain.Scene
 
 data class NovelGameUIState(
-    val scene: Scenes = Scenes.DAY1,
+    val scene: Scene = Scene.entries.first(),
     val isFinishedGame: Boolean = false,
 )

@@ -12,7 +12,7 @@ import ru.markn.engine.GameEngineOps
 class NovelGameOps(
     private val engineOps: GameEngineOps
 ) {
-    private val _currentSceneFlow = MutableStateFlow(Scenes.DAY1)
+    private val _currentSceneFlow = MutableStateFlow(Scene.entries.first())
     val currentSceneFlow = _currentSceneFlow.asStateFlow()
 
     private val _isFinishedGameFlow = MutableStateFlow(false)
@@ -22,7 +22,7 @@ class NovelGameOps(
         CoroutineScope(Dispatchers.Default).launch {
             engineOps.isFinishedSceneFlow.collect { isFinishedScene ->
                 if (isFinishedScene) {
-                    Scenes.entries.find { it.ordinal == _currentSceneFlow.value.ordinal + 1 }?.let {
+                    Scene.entries.find { it.ordinal == _currentSceneFlow.value.ordinal + 1 }?.let {
                         _currentSceneFlow.value = it
                     } ?: run {
                         _isFinishedGameFlow.value = true
@@ -33,7 +33,7 @@ class NovelGameOps(
     }
 
     fun restartGame() {
-        _currentSceneFlow.value = Scenes.DAY1
+        _currentSceneFlow.value = Scene.entries.first()
         _isFinishedGameFlow.value = false
     }
 }

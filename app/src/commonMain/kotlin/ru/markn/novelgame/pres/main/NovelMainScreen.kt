@@ -105,7 +105,7 @@ fun NovelMainScreen(navController: NavController) {
                         contentDescription = "Compose Icon",
                     )
                     Text(
-                        text = "Compose: ${state.text}",
+                        text = state.text,
                         color = Color.White,
                         style = TextStyle(
                             shadow = Shadow(

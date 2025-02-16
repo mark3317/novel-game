@@ -6,12 +6,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.android.annotation.KoinViewModel
-import ru.markn.novelgame.Greeting
 import novel_game.app.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import ru.markn.engine.audio.AudioPlayer
 import ru.markn.novelgame.domain.NovelGameOps
-import ru.markn.novelgame.exitProgram
+import ru.markn.engine.utils.exitProgram
+import ru.markn.engine.utils.getPlatform
 
 @OptIn(ExperimentalResourceApi::class)
 @KoinViewModel
@@ -24,8 +24,7 @@ class NovelMainProcessor(
     private var audioPlayer: AudioPlayer? = null
 
     init {
-        val greeting = Greeting()
-        _state.value = _state.value.copy(text = greeting.greet())
+        _state.value = _state.value.copy(text = "Hello Compose: ${getPlatform()}")
     }
 
     fun onClickShowButton() {

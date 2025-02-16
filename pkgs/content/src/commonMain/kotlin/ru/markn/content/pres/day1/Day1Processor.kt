@@ -37,7 +37,7 @@ class Day1Processor(
     fun onClickNextStage() {
         if (_state.value.isEndStage) {
             _state.value = _state.value.copy(isEndStage = false)
-            val nextStage = Day1Stages.entries.find { it.ordinal == _state.value.stage.ordinal + 1 } ?: Day1Stages.END
+            val nextStage = Day1Stage.entries.find { it.ordinal == _state.value.stage.ordinal + 1 } ?: Day1Stage.END
             nextStage.start()
         } else {
             onEndingPhrase()
@@ -51,37 +51,38 @@ class Day1Processor(
     }
 
     @OptIn(ExperimentalResourceApi::class)
-    private fun Day1Stages.start() {
+    private fun Day1Stage.start() {
         jobStage?.cancel()
         jobStage = viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 when (this@start) {
-                    Day1Stages.START -> {
-                        audioPlayer = AudioPlayer(Res.readBytes("files/day1_scene1.wav"))
+                    Day1Stage.START -> {
+                        audioPlayer = AudioPlayer(Res.readBytes("files/scene1_music1.wav"))
                         audioPlayer?.play(true)
                         delay(2.seconds)
-                        Day1Stages.OCTOBER.start()
+                        Day1Stage.OCTOBER.start()
                     }
 
-                    Day1Stages.OCTOBER -> {
+                    Day1Stage.OCTOBER -> {
                         _state.value = _state.value.copy(stage = this@start)
                     }
 
-                    Day1Stages.THIS_CITY_AFRAID_OF_ME -> {
+                    Day1Stage.THIS_CITY_AFRAID_OF_ME -> {
                         _state.value = _state.value.copy(stage = this@start)
                     }
 
-                    Day1Stages.BELLOW_ME_THIS_CITY -> {
+                    Day1Stage.BELLOW_ME_THIS_CITY -> {
                         _state.value = _state.value.copy(stage = this@start)
                     }
 
-                    Day1Stages.WHOLE_WORLD -> {
+                    Day1Stage.WHOLE_WORLD -> {
                         _state.value = _state.value.copy(stage = this@start)
                     }
 
-                    Day1Stages.END -> {
+                    Day1Stage.END -> {
                         _state.value = _state.value.copy(stage = this@start)
                         delay(2.seconds)
+                        audioPlayer?.release()
                         engineOps.finishScene()
                     }
                 }

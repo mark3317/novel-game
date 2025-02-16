@@ -35,7 +35,7 @@ fun NovelGameScreen(navController: NavController) {
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.TopCenter),
-            text = "novelgame",
+            text = "novelgame-build:1.0.50216",
             color = Color.White,
             maxLines = 1
         )
