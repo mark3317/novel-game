@@ -1,32 +1,35 @@
 package ru.markn.novelgame.pres.game
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import androidx.navigation.NavController
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.annotation.KoinViewModel
+import ru.markn.engine.mvi.MviViewModel
 import ru.markn.novelgame.domain.NovelGameOps
 
 @KoinViewModel
 class NovelGameProcessor(
+    private val navController: NavController,
     private val gameOps: NovelGameOps
-) : ViewModel() {
-    private val _state = MutableStateFlow(NovelGameUIState())
-    val state = _state.asStateFlow()
+) : INovelGameActions, MviViewModel<NovelGameUIState>(
+    NovelGameUIState()
+) {
 
-    init {
-        viewModelScope.launch {
-            gameOps.currentSceneFlow.collect { scene ->
-                _state.value = _state.value.copy(scene = scene)
-            }
-        }
-        viewModelScope.launch {
-            gameOps.isFinishedGameFlow.collect { isFinished ->
+    override val observableFlows: List<Flow<*>>
+        get() = listOf(
+            gameOps.currentSceneFlow.onEach { scene ->
+                updateState {
+                    copy(scene = scene)
+                }
+            },
+            gameOps.isFinishedGameFlow.onEach { isFinished ->
                 if (isFinished) {
-                    _state.value = _state.value.copy(isFinishedGame = true)
+                    navController.popBackStack()
                 }
             }
-        }
+        )
+
+    override fun backToMain() {
+        navController.popBackStack()
     }
 }

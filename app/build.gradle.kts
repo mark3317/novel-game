@@ -126,8 +126,11 @@ compose.desktop {
             packageVersion = "1.0.$buildVersion"
             windows {
                 shortcut = true
-                iconFile.set(project.file("resources/icon_windows.ico"))
+                iconFile = project.file("resources/icon_windows.ico")
                 upgradeUuid = "c6e99e97-7b98-46c2-a378-758464d10dc4"
+            }
+            macOS {
+                iconFile = project.file("resources/icon_mac.icns")
             }
         }
     }

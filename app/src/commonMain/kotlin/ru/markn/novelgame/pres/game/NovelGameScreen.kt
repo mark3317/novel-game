@@ -12,19 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun NovelGameScreen(navController: NavController) {
-    val vm = koinViewModel<NovelGameProcessor>()
-    val state by vm.state.collectAsStateWithLifecycle()
-
-    if (state.isFinishedGame) {
-        navController.popBackStack()
-    }
-
+fun INovelGameActions.NovelGameScreen(state: NovelGameUIState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -64,7 +54,7 @@ fun NovelGameScreen(navController: NavController) {
                     .aspectRatio(1f)
                     .padding(8.dp)
                     .align(Alignment.TopStart),
-                onClick = navController::popBackStack
+                onClick = ::backToMain
             ) {
                 Icon(
                     modifier = Modifier

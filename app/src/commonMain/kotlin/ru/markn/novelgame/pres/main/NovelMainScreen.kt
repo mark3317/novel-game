@@ -24,26 +24,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import novel_game.app.generated.resources.Res
 import novel_game.app.generated.resources.back1
 import novel_game.app.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
-import ru.markn.novelgame.domain.Game
 
 @Composable
-fun NovelMainScreen(navController: NavController) {
-    val vm = koinViewModel<NovelMainProcessor>()
-    val state by vm.state.collectAsStateWithLifecycle()
-
+fun INovelMainActions.NovelMainScreen(state: NovelMainUIState) {
     val windowSize = remember {
         mutableStateOf(IntSize(0, 0))
     }
 
     LaunchedEffect(Unit) {
-        vm.playMusic()
+        playMusic()
     }
 
     Box(
@@ -75,18 +68,15 @@ fun NovelMainScreen(navController: NavController) {
                 horizontalAlignment = Alignment.Start
             ) {
                 GameButton(
-                    onClick = {
-                        navController.navigate(Game)
-                        vm.startGame()
-                    },
+                    onClick = ::startGame,
                     text = "Начать игру"
                 )
                 GameButton(
-                    onClick = vm::onClickShowButton,
+                    onClick = ::onClickShowButton,
                     text = "Настройки"
                 )
                 GameButton(
-                    onClick = vm::onClickExitButton,
+                    onClick = ::onClickExitButton,
                     text = "Выход"
                 )
             }
