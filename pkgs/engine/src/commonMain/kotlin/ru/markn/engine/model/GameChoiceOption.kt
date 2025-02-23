@@ -1,5 +1,5 @@
 package ru.markn.engine.model
 
-interface ChoiceOption {
+interface GameChoiceOption {
     val text: String
 }

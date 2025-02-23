@@ -1,4 +1,4 @@
-package ru.markn.content.pres.day2
+package ru.markn.content.pres.scene2
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
@@ -25,22 +25,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun Day2Screen() {
-    val vm = koinViewModel<Day2Processor>()
-    val state by vm.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        vm.startScene()
-    }
-
+fun IScene2Actions.Scene2Screen(state: Scene2UIState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -48,7 +39,7 @@ fun Day2Screen() {
     ) {
         Crossfade(
             modifier = Modifier.matchParentSize(),
-            targetState = state.stage.backImg,
+            targetState = state.backImg,
             animationSpec = tween(1000)
         ) { backImg ->
             backImg?.let {
@@ -62,20 +53,12 @@ fun Day2Screen() {
         }
         Crossfade(
             modifier = Modifier.align(Alignment.Center),
-            targetState = state.stage,
+            targetState = state.titleScene,
             animationSpec = tween(1000)
-        ) { stage ->
-            if (stage == Day2Stage.START) {
+        ) { title ->
+            if (title.isNotEmpty()) {
                 Text(
-                    text = "День 1",
-                    style = TextStyle(
-                        fontSize = 52.sp,
-                        color = Color.White
-                    ),
-                )
-            } else if (stage == Day2Stage.END) {
-                Text(
-                    text = "В разработке...",
+                    text = title,
                     style = TextStyle(
                         fontSize = 52.sp,
                         color = Color.White
@@ -88,16 +71,16 @@ fun Day2Screen() {
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.CenterStart),
-            visible = state.choice != null,
+            visible = state.gameChoice != null,
             enter = slideInHorizontally(),
             exit = slideOutHorizontally(),
         ) {
             Column(
                 horizontalAlignment = Alignment.Start
             ) {
-                state.choice?.options?.forEach { choiceOption ->
+                state.gameChoice?.options?.forEach { choiceOption ->
                     GameButton(
-                        onClick = { vm.onClickOptionChoice(choiceOption) },
+                        onClick = { onClickChoiceOption(choiceOption) },
                         text = choiceOption.text
                     )
                 }
@@ -114,7 +97,7 @@ fun Day2Screen() {
         ) {
             Crossfade(
                 modifier = Modifier.weight(1f),
-                targetState = state.stage.phrase.text
+                targetState = state.phrase
             ) { text ->
                 if (text.isNotEmpty()) {
                     Box(
@@ -132,10 +115,10 @@ fun Day2Screen() {
                                 )
                             ),
                     ) {
-                        if (!state.isEndStage) {
+                        if (!state.isReadyToContinue) {
                             AnimatedText(
                                 text = text,
-                                onEndingPhrase = vm::onEndingPhrase
+                                onEndingPhrase = ::prepareContinue
                             )
                         } else {
                             Text(
@@ -160,7 +143,7 @@ fun Day2Screen() {
                 }
             }
             AnimatedVisibility(
-                visible = state.isNextButtonEnable,
+                visible = state.isAvailableNextButton,
                 enter = slideInHorizontally { it * 2 },
                 exit = slideOutHorizontally { it * 2 }
             ) {
@@ -168,7 +151,7 @@ fun Day2Screen() {
                     modifier = Modifier
                         .aspectRatio(1f)
                         .fillMaxHeight(),
-                    onClick = vm::onClickNextStage,
+                    onClick = ::onClickNextButton,
                 ) {
                     Icon(
                         modifier = Modifier

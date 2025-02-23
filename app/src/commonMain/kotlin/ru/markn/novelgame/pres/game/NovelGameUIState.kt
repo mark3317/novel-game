@@ -1,8 +1,7 @@
 package ru.markn.novelgame.pres.game
 
 import ru.markn.engine.mvi.IMviState
-import ru.markn.novelgame.domain.Scene
 
 data class NovelGameUIState(
-    val scene: Scene = Scene.entries.first(),
+    val header: String = "novelgame-build:1.0.50223",
 ) : IMviState

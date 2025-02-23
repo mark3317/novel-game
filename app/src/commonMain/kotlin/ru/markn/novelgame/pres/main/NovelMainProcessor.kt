@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.android.annotation.KoinViewModel
 import novel_game.app.generated.resources.Res
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import ru.markn.engine.GameEngineOps
 import ru.markn.engine.audio.AudioPlayer
 import ru.markn.engine.mvi.MviViewModel
-import ru.markn.novelgame.domain.NovelGameOps
 import ru.markn.engine.utils.exitProgram
 import ru.markn.engine.utils.getPlatform
 import ru.markn.novelgame.domain.Game
@@ -19,7 +19,7 @@ import ru.markn.novelgame.domain.Game
 @KoinViewModel
 class NovelMainProcessor(
     private val navController: NavController,
-    private val ops: NovelGameOps
+    private val ops: GameEngineOps
 ) : INovelMainActions, MviViewModel<NovelMainUIState>(
     NovelMainUIState()
 ) {
@@ -29,15 +29,14 @@ class NovelMainProcessor(
         updateState {
             copy(text = "Hello Compose: ${getPlatform()}")
         }
+        playMusic()
     }
 
     override val observableFlows: List<Flow<*>>
         get() = listOf(
             ops.isFinishedGameFlow.onEach {
-                if (it) {
-                    updateState {
-                        copy(text = "Game over")
-                    }
+                updateState {
+                    copy(text = "Game over")
                 }
             }
         )
@@ -60,7 +59,6 @@ class NovelMainProcessor(
     override fun startGame() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                ops.restartGame()
                 audioPlayer?.release()
             }
             navController.navigate(Game)

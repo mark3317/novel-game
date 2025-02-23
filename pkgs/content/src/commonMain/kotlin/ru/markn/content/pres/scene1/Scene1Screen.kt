@@ -1,4 +1,4 @@
-package ru.markn.content.pres.day1
+package ru.markn.content.pres.scene1
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -21,22 +21,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun Day1Screen() {
-    val vm = koinViewModel<Day1Processor>()
-    val state by vm.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        vm.startScene()
-    }
-
+fun IScene1Actions.Scene1Screen(state: Scene1UIState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +35,7 @@ fun Day1Screen() {
     ) {
         Crossfade(
             modifier = Modifier.matchParentSize(),
-            targetState = state.stage.backImg,
+            targetState = state.backImg,
             animationSpec = tween(1000)
         ) { backImg ->
             backImg?.let {
@@ -66,7 +57,7 @@ fun Day1Screen() {
         ) {
             Crossfade(
                 modifier = Modifier.weight(1f),
-                targetState = state.stage.phrase.text
+                targetState = state.phrase
             ) { text ->
                 if (text.isNotEmpty()) {
                     Box(
@@ -84,10 +75,10 @@ fun Day1Screen() {
                                 )
                             ),
                     ) {
-                        if (!state.isEndStage) {
+                        if (!state.isReadyToContinue) {
                             AnimatedText(
                                 text = text,
-                                onEndingPhrase = vm::onEndingPhrase
+                                onEndingPhrase = ::prepareContinue
                             )
                         } else {
                             Text(
@@ -112,7 +103,7 @@ fun Day1Screen() {
                 }
             }
             AnimatedVisibility(
-                visible = state.stage !in listOf(Day1Stage.START, Day1Stage.END),
+                visible = state.isAvailableNextButton,
                 enter = slideInHorizontally { it * 2 },
                 exit = slideOutHorizontally { it * 2 }
             ) {
@@ -120,7 +111,7 @@ fun Day1Screen() {
                     modifier = Modifier
                         .aspectRatio(1f)
                         .fillMaxHeight(),
-                    onClick = vm::onClickNextStage,
+                    onClick = ::onClickNextButton,
                 ) {
                     Icon(
                         modifier = Modifier

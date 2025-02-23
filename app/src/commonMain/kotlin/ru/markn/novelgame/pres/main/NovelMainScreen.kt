@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.HoverInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,115 +20,101 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import novel_game.app.generated.resources.Res
-import novel_game.app.generated.resources.back1
+import novel_game.app.generated.resources.main
 import novel_game.app.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun INovelMainActions.NovelMainScreen(state: NovelMainUIState) {
-    val windowSize = remember {
-        mutableStateOf(IntSize(0, 0))
-    }
-
-    LaunchedEffect(Unit) {
-        playMusic()
-    }
-
-    Box(
-        modifier = Modifier.fillMaxSize().onSizeChanged {
-            windowSize.value = it
-        }
-    ) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val windowWidth = maxWidth
         Image(
-            painter = painterResource(Res.drawable.back1),
+            painter = painterResource(Res.drawable.main),
             contentDescription = "background1",
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop
         )
 
-        GameTitle(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 120.dp)
-        )
+        GameTitle()
 
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(70.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .align(Alignment.CenterStart)
+                .width(windowWidth * 0.30f)
+                .padding(start = windowWidth * 0.05f),
+            verticalArrangement = Arrangement.Center
+        ) {
+            GameButton(
+                onClick = ::startGame,
+                text = "Начать игру"
+            )
+            GameButton(
+                onClick = ::onClickShowButton,
+                text = "Настройки"
+            )
+            GameButton(
+                onClick = ::onClickExitButton,
+                text = "Выход"
+            )
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .width(windowWidth * 0.20f),
+            visible = state.isShowedText,
+            enter = fadeIn() + slideInHorizontally { 2 * it },
+            exit = fadeOut() + slideOutHorizontally { 2 * it },
         ) {
             Column(
-                horizontalAlignment = Alignment.Start
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                GameButton(
-                    onClick = ::startGame,
-                    text = "Начать игру"
+                Image(
+                    painter = painterResource(Res.drawable.compose_multiplatform),
+                    contentDescription = "Compose Icon",
                 )
-                GameButton(
-                    onClick = ::onClickShowButton,
-                    text = "Настройки"
-                )
-                GameButton(
-                    onClick = ::onClickExitButton,
-                    text = "Выход"
-                )
-            }
-
-            AnimatedVisibility(
-                visible = state.isShowedText,
-                enter = fadeIn() + slideInHorizontally { 2 * it },
-                exit = fadeOut() + slideOutHorizontally { 2 * it },
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        modifier = Modifier.size(200.dp),
-                        painter = painterResource(Res.drawable.compose_multiplatform),
-                        contentDescription = "Compose Icon",
-                    )
-                    Text(
-                        text = state.text,
-                        color = Color.White,
-                        style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black,
-                                blurRadius = 3f,
-                                offset = Offset(2f, 2f)
-                            )
+                Text(
+                    text = state.text,
+                    color = Color.White,
+                    style = TextStyle(
+                        shadow = Shadow(
+                            color = Color.Black,
+                            blurRadius = 3f,
+                            offset = Offset(2f, 2f)
                         )
                     )
-                }
+                )
             }
         }
     }
 }
 
 @Composable
-fun GameTitle(
-    modifier: Modifier = Modifier
-) {
+fun BoxWithConstraintsScope.GameTitle() {
     var text by remember { mutableStateOf("Все, что было до...") }
     var isClicked by remember { mutableStateOf(false) }
 
+    val horizontalPadding = maxWidth * 0.2f
+    val verticalPadding = maxHeight * 0.1f
+
     Box(
-        modifier = modifier
+        modifier = Modifier
+            .align(Alignment.TopCenter)
+            .padding(top = verticalPadding, start = horizontalPadding, end = horizontalPadding)
+            .height(verticalPadding)
             .clickable(
                 interactionSource = null,
                 indication = null,
             ) {
                 isClicked = !isClicked
                 text = if (isClicked) "Все, что было до - это полная хуйня" else "Все, что было до..."
-            },
+            }
     ) {
         AnimatedContent(
             targetState = text,
@@ -134,12 +122,12 @@ fun GameTitle(
                 fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
             }
         ) { targetText ->
-            Text(
+            BasicText(
                 text = targetText,
+                autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 96.sp, stepSize = 2.sp),
                 style = TextStyle(
-                    fontSize = 96.sp,
-                    color = Color.White,
                     fontFamily = FontFamily.Cursive,
+                    color = Color.White,
                     shadow = Shadow(
                         color = Color.Black,
                         blurRadius = 3f,
@@ -192,13 +180,15 @@ fun GameButton(
                         )
                     )
                 ) else Modifier
-            )
+            ),
+        contentAlignment = Alignment.CenterStart
     ) {
-        Text(
+        BasicText(
             modifier = Modifier.padding(start = animatedPadding, top = 4.dp, bottom = 4.dp),
+            maxLines = 1,
             text = text,
+            autoSize = TextAutoSize.StepBased(minFontSize = 10.sp, maxFontSize = 42.sp, stepSize = 1.sp),
             style = TextStyle(
-                fontSize = 42.sp,
                 color = Color.White,
                 shadow = Shadow(
                     color = Color.Black,

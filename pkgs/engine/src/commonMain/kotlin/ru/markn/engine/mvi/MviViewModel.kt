@@ -15,7 +15,7 @@ abstract class MviViewModel<S: IMviState>(
         coroutineScope {
             observableFlows.map {
                 async(Dispatchers.IO) {
-                    it.retry { true }.collect()
+                    it.collect()
                 }
             }.awaitAll()
         }

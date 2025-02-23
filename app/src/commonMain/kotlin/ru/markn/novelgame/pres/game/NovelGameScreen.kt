@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
+import ru.markn.content.pres.gameGraph
 
 @Composable
 fun INovelGameActions.NovelGameScreen(state: NovelGameUIState) {
@@ -20,12 +21,12 @@ fun INovelGameActions.NovelGameScreen(state: NovelGameUIState) {
             .fillMaxSize()
             .background(Color.Black),
     ) {
-        state.scene.show()
+        gameGraph()
         Text(
             modifier = Modifier
                 .padding(8.dp)
                 .align(Alignment.TopCenter),
-            text = "novelgame-build:1.0.50216",
+            text = state.header,
             color = Color.White,
             maxLines = 1
         )
