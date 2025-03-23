@@ -5,4 +5,5 @@ import ru.markn.engine.mvi.IMviActions
 interface IScene1Actions : IMviActions {
     fun prepareContinue()
     fun onClickNextButton()
+    fun disposeScreen()
 }

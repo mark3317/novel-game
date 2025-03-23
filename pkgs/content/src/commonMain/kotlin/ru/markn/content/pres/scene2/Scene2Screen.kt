@@ -32,6 +32,11 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun IScene2Actions.Scene2Screen(state: Scene2UIState) {
+    DisposableEffect(Unit) {
+        onDispose {
+            disposeScreen()
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()

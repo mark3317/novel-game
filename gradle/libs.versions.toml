@@ -6,18 +6,20 @@ android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
 androidx-lifecycle = "2.9.0-alpha04"
 compose-multiplatform = "1.8.0-alpha04"
+jlayer = "1.0.3"
 kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
 kotlinx-serialization = "1.8.0"
 koin = "4.1.0-Beta5"
 koin-ksp = "2.0.0"
 ksp = "2.1.10-1.0.29"
-media3Exoplayer = "1.6.0-rc01"
+media3Exoplayer = "1.6.0-rc02"
 navigation-compose = "2.8.0-alpha12"
 osdetector = "1.7.3"
 
 [libraries]
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
+jlayer = { module = "com.github.umjammer:jlayer", version.ref = "jlayer" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }

@@ -4,5 +4,5 @@ import ru.markn.engine.mvi.IMviState
 
 data class NovelMainUIState(
     val isShowedText: Boolean = false,
-    val text: String = ""
+    val text: String
 ) : IMviState

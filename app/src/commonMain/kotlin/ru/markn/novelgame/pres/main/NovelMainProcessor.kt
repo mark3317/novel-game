@@ -2,14 +2,12 @@ package ru.markn.novelgame.pres.main
 
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.annotation.KoinViewModel
-import novel_game.app.generated.resources.Res
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.koin.android.annotation.KoinViewModel
 import ru.markn.engine.GameEngineOps
-import ru.markn.engine.audio.AudioPlayer
 import ru.markn.engine.mvi.MviViewModel
 import ru.markn.engine.utils.exitProgram
 import ru.markn.engine.utils.getPlatform
@@ -21,17 +19,10 @@ class NovelMainProcessor(
     private val navController: NavController,
     private val ops: GameEngineOps
 ) : INovelMainActions, MviViewModel<NovelMainUIState>(
-    NovelMainUIState()
+    NovelMainUIState(
+        text = "Hello Compose: ${getPlatform()}"
+    )
 ) {
-    private var audioPlayer: AudioPlayer? = null
-
-    init {
-        updateState {
-            copy(text = "Hello Compose: ${getPlatform()}")
-        }
-        playMusic()
-    }
-
     override val observableFlows: List<Flow<*>>
         get() = listOf(
             ops.isFinishedGameFlow.onEach {
@@ -47,20 +38,8 @@ class NovelMainProcessor(
         }
     }
 
-    override fun playMusic() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                audioPlayer = AudioPlayer(Res.readBytes("files/music1.wav"))
-                audioPlayer?.play(true)
-            }
-        }
-    }
-
     override fun startGame() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                audioPlayer?.release()
-            }
             navController.navigate(Game)
         }
     }

@@ -8,10 +8,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import novel_game.pkgs.content.generated.resources.*
-import novel_game.pkgs.content.generated.resources.Res
-import novel_game.pkgs.content.generated.resources.scene1_back1
-import novel_game.pkgs.content.generated.resources.scene1_back2
-import novel_game.pkgs.content.generated.resources.scene1_back3
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.android.annotation.KoinViewModel
 import ru.markn.content.domain.Scene2
@@ -28,7 +24,8 @@ class Scene1Processor(
 ) {
     private val scenePartFlow = MutableStateFlow(Part.INTRO)
     private val continueFlow = MutableSharedFlow<Unit>()
-    private var audioPlayer: AudioPlayer? = null
+    private var audioPlayer = AudioPlayer()
+
     private enum class Part {
         INTRO
     }
@@ -43,9 +40,7 @@ class Scene1Processor(
     @OptIn(ExperimentalResourceApi::class)
     private val sceneParts: Map<Part, GamePartScript> = mapOf(
         Part.INTRO to GamePartScript {
-            audioPlayer?.release()
-            audioPlayer = AudioPlayer(Res.readBytes("files/scene1_music1.wav"))
-            audioPlayer?.play(true)
+            audioPlayer.play(Res.readBytes("files/scene1_music1.mp3"))
             delay(2.seconds)
             updateState {
                 copy(
@@ -80,7 +75,7 @@ class Scene1Processor(
                 )
             }
             continueFlow.first()
-            audioPlayer?.release()
+            audioPlayer.stop(durationFadeOut = 1.seconds)
             withContext(Dispatchers.Main) {
                 navController.navigate(Scene2) {
                     popUpTo(0)
@@ -103,5 +98,9 @@ class Scene1Processor(
                 prepareContinue()
             }
         }
+    }
+
+    override fun disposeScreen() {
+        audioPlayer.stop()
     }
 }

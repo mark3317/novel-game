@@ -25,9 +25,15 @@ import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun IScene1Actions.Scene1Screen(state: Scene1UIState) {
+    DisposableEffect(Unit) {
+        onDispose {
+            disposeScreen()
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()

@@ -7,4 +7,5 @@ interface IScene2Actions : IMviActions {
     fun prepareContinue()
     fun onClickNextButton()
     fun onClickChoiceOption(option: GameChoiceOption)
+    fun disposeScreen()
 }

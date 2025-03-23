@@ -11,6 +11,7 @@ import org.koin.android.annotation.KoinViewModel
 import ru.markn.content.domain.models.scene2.Scene2Choice1
 import ru.markn.engine.GameEngineOps
 import ru.markn.engine.audio.AudioPlayer
+import ru.markn.engine.audio.PlayerState
 import ru.markn.engine.model.GameChoiceOption
 import ru.markn.engine.model.GamePartScript
 import ru.markn.engine.mvi.MviViewModel
@@ -25,13 +26,14 @@ class Scene2Processor(
     private val scenePartFlow = MutableStateFlow(Part.WAKE_UP)
     private val choiceOptionFlow = MutableSharedFlow<GameChoiceOption>()
     private val continueFlow = MutableSharedFlow<Unit>()
-    private var audioPlayer: AudioPlayer? = null
+    private var audioPlayer: AudioPlayer = AudioPlayer()
 
     private enum class Part {
         WAKE_UP,
         CHOICE_1_ANSWER,
         CHOICE_1_RESET,
         CHOICE_1_IGNORE,
+        FINISHED,
     }
 
     override val observableFlows: List<Flow<*>>
@@ -58,13 +60,10 @@ class Scene2Processor(
                 )
             }
             delay(1.seconds)
-            audioPlayer = AudioPlayer(Res.readBytes("files/scene2_hrap.wav"))
-            audioPlayer?.play(true)
-            delay(4.seconds)
-            audioPlayer?.release()
-            audioPlayer = AudioPlayer(Res.readBytes("files/scene2_music1.wav"))
-            audioPlayer?.play()
-            delay(4.seconds)
+            audioPlayer.play(Res.readBytes("files/scene2_hrap.mp3"))
+            delay(1.seconds)
+            audioPlayer.stateFlow.first { it == PlayerState.IDLE }
+            audioPlayer.play(Res.readBytes("files/scene2_music1.mp3"))
             updateState {
                 copy(
                     isReadyToContinue = true,
@@ -96,7 +95,7 @@ class Scene2Processor(
             }
         },
         Part.CHOICE_1_ANSWER to GamePartScript {
-            audioPlayer?.release()
+            audioPlayer.stop()
             updateState {
                 copy(
                     phrase = "Макс: Привет, Леша! Ты что спишь?! Давай вставай и идем на тренировку!",
@@ -114,10 +113,10 @@ class Scene2Processor(
                 )
             }
             continueFlow.first()
-            ops.isFinishedGameFlow.emit(Unit)
+            scenePartFlow.value = Part.FINISHED
         },
         Part.CHOICE_1_RESET to GamePartScript {
-            audioPlayer?.release()
+            audioPlayer.stop()
             updateState {
                 copy(
                     phrase = "Леша: Ничего страшного если я пропущу одну тренировку. Тем более я не выспался, а полноценный сон ничуть не хуже тренировки для здоровья.",
@@ -128,7 +127,7 @@ class Scene2Processor(
                 )
             }
             continueFlow.first()
-            ops.isFinishedGameFlow.emit(Unit)
+            scenePartFlow.value = Part.FINISHED
         },
         Part.CHOICE_1_IGNORE to GamePartScript {
             updateState {
@@ -141,7 +140,20 @@ class Scene2Processor(
                 )
             }
             continueFlow.first()
-            audioPlayer?.release()
+            audioPlayer.stop()
+            scenePartFlow.value = Part.FINISHED
+        },
+        Part.FINISHED to GamePartScript {
+            updateState {
+                copy(
+                    titleScene = "В разработке",
+                    phrase = "",
+                    backImg = null,
+                    isAvailableNextButton = false,
+                    isReadyToContinue = false,
+                )
+            }
+            delay(2.seconds)
             ops.isFinishedGameFlow.emit(Unit)
         }
     )
@@ -166,5 +178,9 @@ class Scene2Processor(
         viewModelScope.launch {
             choiceOptionFlow.emit(option)
         }
+    }
+
+    override fun disposeScreen() {
+        audioPlayer.stop()
     }
 }
