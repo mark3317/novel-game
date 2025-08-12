@@ -10,6 +10,8 @@ abstract class MviViewModel<S: IMviState>(
 ) : ViewModel() {
     private val _stateFlow = MutableStateFlow(initialState)
 
+    private val _navigateStateFlow: MutableStateFlow<Any?> = MutableStateFlow(null)
+
     private val _observingFlow: Flow<Unit> = flow {
         emit(Unit)
         coroutineScope {
@@ -23,6 +25,9 @@ abstract class MviViewModel<S: IMviState>(
 
     protected open val observableFlows: List<Flow<*>> = listOf()
 
+    val navigateStateFlow: SharedFlow<Any?>
+        get() = _navigateStateFlow.asSharedFlow()
+
     val stateFlow: SharedFlow<S> =
         combine(_stateFlow, _observingFlow) { s, _ -> s }
             .distinctUntilChanged()
@@ -35,5 +40,9 @@ abstract class MviViewModel<S: IMviState>(
         val newState = state.transform()
         _stateFlow.emit(newState)
         newState.also { println("updateState: $it") }
+    }
+
+    fun navigateTo(destination: Any) {
+        _navigateStateFlow.value = destination
     }
 }

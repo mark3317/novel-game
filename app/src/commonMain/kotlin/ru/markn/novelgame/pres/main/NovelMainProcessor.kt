@@ -16,7 +16,6 @@ import ru.markn.novelgame.domain.Game
 @OptIn(ExperimentalResourceApi::class)
 @KoinViewModel
 class NovelMainProcessor(
-    private val navController: NavController,
     private val ops: GameEngineOps
 ) : INovelMainActions, MviViewModel<NovelMainUIState>(
     NovelMainUIState(
@@ -39,9 +38,7 @@ class NovelMainProcessor(
     }
 
     override fun startGame() {
-        viewModelScope.launch {
-            navController.navigate(Game)
-        }
+        navigateTo(Game)
     }
 
     override fun onClickExitButton() {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +30,8 @@ import novel_game.app.generated.resources.compose_multiplatform
 import novel_game.app.generated.resources.main
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import ru.markn.engine.audio.AudioPlayer
 import ru.markn.engine.audio.PlayerState
 import kotlin.time.Duration.Companion.seconds
@@ -36,19 +39,19 @@ import kotlin.time.Duration.Companion.seconds
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun INovelMainActions.NovelMainScreen(state: NovelMainUIState) {
-    val audioPlayer = AudioPlayer()
-    LaunchedEffect(Unit) {
-        audioPlayer.stateFlow.collect { state ->
-            if (state == PlayerState.IDLE) {
-                audioPlayer.play(Res.readBytes("files/main.mp3"))
-            }
-        }
-    }
-    DisposableEffect(Unit) {
-        onDispose {
-            audioPlayer.stop(durationFadeOut = 1.seconds)
-        }
-    }
+//    val audioPlayer = AudioPlayer()
+//    LaunchedEffect(Unit) {
+//        audioPlayer.stateFlow.collect { state ->
+//            if (state == PlayerState.IDLE) {
+//                audioPlayer.play(Res.readBytes("files/main.mp3"))
+//            }
+//        }
+//    }
+//    DisposableEffect(Unit) {
+//        onDispose {
+//            audioPlayer.stop(durationFadeOut = 1.seconds)
+//        }
+//    }
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val windowWidth = maxWidth
         Image(
@@ -215,5 +218,18 @@ fun GameButton(
                 )
             )
         )
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    val actions = object : INovelMainActions {
+        override fun startGame() {}
+        override fun onClickShowButton() {}
+        override fun onClickExitButton() {}
+    }
+    MaterialTheme {
+        actions.NovelMainScreen(NovelMainUIState(text = "Привет, мир!", isShowedText = true))
     }
 }

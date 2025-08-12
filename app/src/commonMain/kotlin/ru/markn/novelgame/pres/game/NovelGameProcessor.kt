@@ -11,7 +11,6 @@ import ru.markn.engine.mvi.MviViewModel
 
 @KoinViewModel
 class NovelGameProcessor(
-    private val navController: NavController,
     private val engineOps: GameEngineOps
 ) : INovelGameActions, MviViewModel<NovelGameUIState>(
     NovelGameUIState()
@@ -21,12 +20,12 @@ class NovelGameProcessor(
         get() = listOf(
             engineOps.isFinishedGameFlow.onEach {
                 withContext(Dispatchers.Main) {
-                    navController.popBackStack()
+//                    navController.popBackStack()
                 }
             }
         )
 
     override fun backToMain() {
-        navController.popBackStack()
+//        navController.popBackStack()
     }
 }
