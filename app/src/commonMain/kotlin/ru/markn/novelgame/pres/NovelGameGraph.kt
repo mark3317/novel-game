@@ -1,11 +1,8 @@
 package ru.markn.novelgame.pres
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.navigation.compose.NavHost
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.navigation.createGraph
 import org.koin.compose.viewmodel.koinViewModel
 import ru.markn.engine.mvi.MviScreen
 import ru.markn.novelgame.domain.Game
@@ -15,22 +12,16 @@ import ru.markn.novelgame.pres.game.NovelGameScreen
 import ru.markn.novelgame.pres.main.NovelMainProcessor
 import ru.markn.novelgame.pres.main.NovelMainScreen
 
-@Preview
-@Composable
-fun NovelGameGraph() {
-    val navController = rememberNavController()
-    MaterialTheme {
-        NavHost(navController, startDestination = Main) {
-            composable<Main> {
-                MviScreen(vm = koinViewModel<NovelMainProcessor>(), navController = navController) {
-                    NovelMainScreen(it)
-                }
-            }
-            composable<Game> {
-                MviScreen(vm = koinViewModel<NovelGameProcessor>(), navController = navController) {
-                    NovelGameScreen(it)
-                }
-            }
+context(navHostController: NavHostController)
+fun novelGameGraph() = navHostController.createGraph(startDestination = Main) {
+    composable<Main> {
+        MviScreen(vm = koinViewModel<NovelMainProcessor>()) {
+            NovelMainScreen(it)
+        }
+    }
+    composable<Game> {
+        MviScreen(vm = koinViewModel<NovelGameProcessor>()) {
+            NovelGameScreen(it)
         }
     }
 }

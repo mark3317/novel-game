@@ -1,10 +1,7 @@
 package ru.markn.novelgame.pres.main
 
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.android.annotation.KoinViewModel
 import ru.markn.engine.GameEngineOps
@@ -31,17 +28,18 @@ class NovelMainProcessor(
             }
         )
 
-    override fun onClickShowButton() {
-        updateState {
+    override fun onClickShowButton() = intent(
+        name = "onClickShowButton",
+        updateStateImmediate = {
             copy(isShowedText = !isShowedText)
-        }
-    }
+        },
+    )
 
-    override fun startGame() {
+    override fun startGame() = skipDebounceIntent("startGame") {
         navigateTo(Game)
     }
 
-    override fun onClickExitButton() {
+    override fun onClickExitButton() = skipDebounceIntent("onClickExitButton") {
         exitProgram()
     }
 }

@@ -1,12 +1,9 @@
 package ru.markn.content.pres.scene1
 
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import novel_game.pkgs.content.generated.resources.*
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.koin.android.annotation.KoinViewModel
@@ -17,9 +14,7 @@ import ru.markn.engine.mvi.MviViewModel
 import kotlin.time.Duration.Companion.seconds
 
 @KoinViewModel
-class Scene1Processor(
-    private val navController: NavController
-) : IScene1Actions, MviViewModel<Scene1UIState>(
+class Scene1Processor() : IScene1Actions, MviViewModel<Scene1UIState>(
     Scene1UIState()
 ) {
     private val scenePartFlow = MutableStateFlow(Part.INTRO)
@@ -76,11 +71,7 @@ class Scene1Processor(
             }
             continueFlow.first()
             audioPlayer.stop(durationFadeOut = 1.seconds)
-            withContext(Dispatchers.Main) {
-                navController.navigate(Scene2) {
-                    popUpTo(0)
-                }
-            }
+            navigateTo(Scene2)
         }
     )
 
